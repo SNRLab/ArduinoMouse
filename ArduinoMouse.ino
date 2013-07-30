@@ -1,3 +1,5 @@
+#include <SPI.h>
+
 /*
  ArduinoMouse
  
@@ -80,10 +82,10 @@ float SYSTEM_DEPTH = 73.447;
 //angle values
 int totalDegrees = 0;
 int prevDegrees;
+float degreeCorrelation = 2.65;
 
 //desired value for the leds to all be lit at
 float maxValue = 100;
-
 
 //time keeping values
 float startTime = 0;
@@ -105,26 +107,25 @@ void mouseMoved() {
 
   totalX += mouse.getXChange();
 
-  if(totalX > 104.848){
+  if(totalX > 360/degreeCorrelation){
     totalX = 0; 
   }
   else if(totalX < 0){
-    totalX = 104.848;
+    totalX = 360/degreeCorrelation;
   }
 
-  int tempYChange = mouse.getYChange();
-  totalDegrees = totalX * 3.424;
-
-  //Serial.print(totalDegrees);
+  totalDegrees = totalX * degreeCorrelation;
+  
+  //Serial.println(totalX);
   //Serial.print(", ");
 
-  totalY += tempYChange;
-  totalMM = (-1 *(totalY/45.607)-SYSTEM_DEPTH);
+  totalY += mouse.getYChange();
+  totalMM = (-1 *(totalY/49.118)-SYSTEM_DEPTH);
 
-  //Serial.println(totalMM);
+  Serial.println(totalMM);
 }
 
-// Checks to see which leds should light up based on a desired distance value
+//Checks to see which leds should light up based on a desired distance value
 void checkLEDS() {
   if((totalMM) < maxValue * 4/5) {
     digitalWrite(4, HIGH); 
@@ -190,8 +191,8 @@ void displayProgress(){
     lastPercent = percent;
   }
    //draws a line to represent the current angle of the needle
-   tft.drawLine(120,300, int(cos(prevDegrees * (PI/180)) * 80)+120, int(sin(prevDegrees* (PI/180))*80)+300, BLACK);
-   tft.drawLine(120,300, int(cos(totalDegrees* (PI/180)) * 80)+120, int(sin(totalDegrees* (PI/180))*80)+300, GREEN);
+   tft.drawLine(120,300, cos(prevDegrees * (PI/180)) * 80+120, sin(prevDegrees* (PI/180))*80+300, BLACK);
+   tft.drawLine(120,300, cos(totalDegrees* (PI/180)) * 80+120, sin(totalDegrees* (PI/180))*80+300, GREEN);
 }
 
 //displays the keyboard
@@ -320,6 +321,24 @@ void determineToggle(){
   }
 }
 
+void drawDegreeDisplay(){
+  tft.setCursor(225, 293);
+  tft.print("0");
+  tft.drawLine(200,300,215,300,GREEN);
+  tft.drawLine(120,380,120,395,GREEN);
+  tft.drawLine(40,300,25,300,GREEN);
+  tft.drawLine(120,220,120,205,GREEN);
+  tft.drawLine(cos(PI/6) * 80 + 120, sin(PI/6) * 80 + 300, cos(PI/6) * 95 + 120, sin(PI/6) * 95 + 300,GREEN);
+  tft.drawLine(cos(PI/3) * 80 + 120, sin(PI/3) * 80 + 300, cos(PI/3) * 95 + 120, sin(PI/3) * 95 + 300,GREEN);
+  tft.drawLine(cos(5*PI/6) * 80 + 120, sin(5*PI/6) * 80 + 300, cos(5*PI/6) * 95 + 120, sin(5*PI/6) * 95 + 300,GREEN);
+  tft.drawLine(cos(5*PI/3) * 80 + 120, sin(5*PI/3) * 80 + 300, cos(5*PI/3) * 95 + 120, sin(5*PI/3) * 95 + 300,GREEN);
+  tft.drawLine(cos(7*PI/6) * 80 + 120, sin(7*PI/6) * 80 + 300, cos(7*PI/6) * 95 + 120, sin(7*PI/6) * 95 + 300,GREEN);
+  tft.drawLine(cos(2*PI/3) * 80 + 120, sin(2*PI/3) * 80 + 300, cos(2*PI/3) * 95 + 120, sin(2*PI/3) * 95 + 300,GREEN);
+  tft.drawLine(cos(11*PI/6) * 80 + 120, sin(11*PI/6) * 80 + 300, cos(11*PI/6) * 95 + 120, sin(11*PI/6) * 95 + 300,GREEN);
+  tft.drawLine(cos(4*PI/3) * 80 + 120, sin(4*PI/3) * 80 + 300, cos(4*PI/3) * 95 + 120, sin(4*PI/3) * 95 + 300,GREEN);
+  
+  
+}
 void setup()
 {
   Serial.begin(115200);
@@ -376,7 +395,9 @@ void setup()
   Serial.print("Maximum Value: ");
   Serial.println(maxValue);
   Serial.println();
-
+  
+  drawDegreeDisplay();
+  
   tft.setCursor(20, 90);
   tft.print("EndDist: ");
   tft.setCursor(120,90);
