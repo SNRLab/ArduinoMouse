@@ -77,15 +77,15 @@ float totalMM;
 float prevMM;
 
 //distance from the sensor to the front of the smart template
-float SYSTEM_DEPTH = 73.447;
+float SYSTEM_DEPTH = 55.00;
 
 //angle values
 int totalDegrees = 0;
 int prevDegrees;
 float degreeCorrelation = 2.65;
 
-//desired value for the leds to all be lit at
-float maxValue = 100;
+//desired value for the leds to all be lit at -set to zero to enable input
+float maxValue = 0;
 
 //time keeping values
 float startTime = 0;
@@ -115,7 +115,7 @@ void mouseMoved() {
   }
 
   totalDegrees = totalX * degreeCorrelation;
-  
+
   //Serial.println(totalX);
   //Serial.print(", ");
 
@@ -190,9 +190,9 @@ void displayProgress(){
     }
     lastPercent = percent;
   }
-   //draws a line to represent the current angle of the needle
-   tft.drawLine(120,300, cos(prevDegrees * (PI/180)) * 80+120, sin(prevDegrees* (PI/180))*80+300, BLACK);
-   tft.drawLine(120,300, cos(totalDegrees* (PI/180)) * 80+120, sin(totalDegrees* (PI/180))*80+300, GREEN);
+  //draws a line to represent the current angle of the needle
+  tft.drawLine(120,300, cos(prevDegrees * (PI/180)) * 80+120, sin(prevDegrees* (PI/180))*80+300, BLACK);
+  tft.drawLine(120,300, cos(totalDegrees* (PI/180)) * 80+120, sin(totalDegrees* (PI/180))*80+300, GREEN);
 }
 
 //displays the keyboard
@@ -336,8 +336,8 @@ void drawDegreeDisplay(){
   tft.drawLine(cos(2*PI/3) * 80 + 120, sin(2*PI/3) * 80 + 300, cos(2*PI/3) * 95 + 120, sin(2*PI/3) * 95 + 300,GREEN);
   tft.drawLine(cos(11*PI/6) * 80 + 120, sin(11*PI/6) * 80 + 300, cos(11*PI/6) * 95 + 120, sin(11*PI/6) * 95 + 300,GREEN);
   tft.drawLine(cos(4*PI/3) * 80 + 120, sin(4*PI/3) * 80 + 300, cos(4*PI/3) * 95 + 120, sin(4*PI/3) * 95 + 300,GREEN);
-  
-  
+
+
 }
 void setup()
 {
@@ -395,9 +395,9 @@ void setup()
   Serial.print("Maximum Value: ");
   Serial.println(maxValue);
   Serial.println();
-  
+
   drawDegreeDisplay();
-  
+
   tft.setCursor(20, 90);
   tft.print("EndDist: ");
   tft.setCursor(120,90);
@@ -437,6 +437,7 @@ void loop()
   prevTime = currentTime;
   prevDegrees = totalDegrees;
 }
+
 
 
 
